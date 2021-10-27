@@ -1,0 +1,15 @@
+Steps needed; NB that ABG data can come from Metavision or the biochem department.
+
+==============
+SCRIPTS needed
+==============
+
+1) Read in data
+    - the formats of Metavision output and the biochem ABG data are different, but
+      so have different wrangling requirements.
+    - the biochem ABG data is already 'tidy'.
+    - this might be bnest handled by creating a folder with some subfolders for each
+      patient.
+    - eg "Patient X" folder; subfolders "Metavision data", "Biochem_ABG"
+    - finished data can go in the main folder
+    - So, the script can have options 1 or 2 (or something) for data source?
