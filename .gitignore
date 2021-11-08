@@ -48,3 +48,14 @@ po/*~
 ### R.Bookdown Stack ###
 # R package: bookdown caching files
 /*_files/
+
+### My additions
+raw_data/
+.DS_Store
+
+
+lu869639r5fma.tmp
+
+The difficulty with data collection in UHG.odt
+
+.~lock.The difficulty with data collection in UHG.odt#
