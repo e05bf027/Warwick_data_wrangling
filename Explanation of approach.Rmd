@@ -3,10 +3,12 @@ title: "UHG data wrangling"
 author: "David M Hannon"
 date: "08/11/2021"
 output:
-  html_document: 
-    toc: true
-    toc_float: true
-    number_sections: true
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
+    number_sections: no
 ---
 
 ```{r setup, include=FALSE}
@@ -36,18 +38,18 @@ The SQL-based approach is not viable at present. The solution involves using a h
 - **Load patient data**
   - Metavision data. This step depends on the approach to isolating data from Metavision initially:
     - A: assemble the fragments and create a data frame from each (they can be assembled later in various ways)
-    - B: read the entirety of the data in and prepare filters that can 'punch out' bits you are interested in. These data frames can be reassembled as per point A above.
+    - B: read the entirety of the data in and prepare filters that can 'punch out' bits you are interested in. These data frames can be reassembled as per point A above. Overall, this is the simplest approach.
   - ABG data:
     - This data can come from Metavision (higher likelihood of inaccuracy, especially regarding time the sample is taken) or from the Biochem department (more accurate, but slower to obtain, and reliant on the nurse running the sample through the analyser to have entered patient ID details with complete accuracy).
     
 - **Ensure the data is anonymised**
   - Remove all possible patient identifiers.
   
+- **Apply a transformation**
+  - pivot any tables you have read in to a 'wide' format to render it tidy (NB ABG data from biochem already 'tidy').
+  
 - **Split the data**
   - If all the data has been loaded at once, filters must be applied to split it.
-  
-- **Apply a transformation**
-  - pivot each table to a 'wide' format to render it tidy (NB ABG data from biochem already 'tidy').
 
 - **Combine the results**
   - assemble a new data table by adding/binding each variable table together
@@ -78,4 +80,59 @@ The SQL-based approach is not viable at present. The solution involves using a h
 5. **Final custom touches**
   - add an info sheet at the start of the file
   - add rows to indicate proning vs. unproning
+
+### Scripts details
+
+Step 1 is to load relevant packages:
+
+```{r echo=TRUE, eval=FALSE}
+
+library(tidyverse)   # Loads packages needed
+library(lubridate)
+library(readxl)
+
+```
+
+Step 1 is to create a character vector containing the destination for the large overall data file, and then we will create the large dataframe to be trimmed.
+
+```{r }
+
+# Begin by entering the pathway of the large data frame you will subdivide.
+file_location <- as.character('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/01_AO/Verified/01_AO_verified.xlsx')
+
+large_tibble <- read_xlsx(file_location)
+
+```
+
+The resulting tibble needs to be fully anonymised, we will select out only what is needed. Then we coerce 'parameter name' to character.
+
+```{r}
+
+large_tibble <-  large_tibble %>% 
+                 select(Time, `Parameter Name`, Value)
+
+large_tibble$`Parameter Name` <- as.factor(large_tibble$`Parameter Name`)
+
+head(large_tibble)
+
+```
+Next, we pivot wider, and ensure we have sorted by Time.
+
+```{r}
+
+large_tibble <- pivot_wider(large_tibble, names_from = `Parameter Name`, values_from = Value) %>% arrange(Time)
+
+```
+
+The next step is optional and depends on whether we want to include the 30 minutes or so either side of the prone or supine positioning. This essentially follows a similar process to the above, but a little more involved.
+
+```{r}
+
+periprone_location <- as.character('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/01_AO/Unverified')
+
+periprone_files <- list.files(periprone_location)
+periprone_files
+
+```
+
 
