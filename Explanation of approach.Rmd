@@ -1,0 +1,81 @@
+---
+title: "UHG data wrangling"
+author: "David M Hannon"
+date: "08/11/2021"
+output:
+  html_document: 
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# UHG Metavision processing
+
+## Problem outline
+
+There are two ways to get the version of Metavision in UHG to generate output.  
+
+The first is a ‘Metavision Query Wizard’ that allows us to set parameters, and then returns the data that matches these parameters in the form of an Excel file. The limitation here is that if you ask for too many data points the machine hangs and you must abort the attempt.  
+
+The second approach is a ‘back end’ method. This involves writing queries in SQL to interrogate the large relational databases in  Metavision. The issue here is that you must know the detailed structure of the database in order to write the SQL queries. Each deployment of Metavision is unique to the requirements of that  hospital (like each house is similar, and uses the same bricks to build with, but the results are subtly unique so that the instructions to locate the teabags in my house are different from someone else’s). The company who own Metavision, iMD Soft, were approached about in the past, but they wanted significant payment.
+
+The final piece of the puzzle involves ABG data.  The ABG analysers do not integrate to Metavision. I am told this is a conscious choice on the part of the biochem department. The result is that the nurse at the patients bedside enters the results manually. The results in a myriad of potential issues:
+* Is the time the nurse entered the same as the actual time the sample was taken? The key implication here is in matching the ABG value to position of the patient at this time.
+* Have any errors been made when transcribing the values?
+* Has a full result been recorded? Metavision does not have space for every result from the analyser (e.g. p50), and depending on clinical need, the nurse may only record the results that are most relevant at that moment.
+* The Metavision data, and the biochem values are both available, but having both can lead to the appearance of two near identical samples at different times, when they refer to the same sample recorded in two ways.  
+
+## Solution Outline
+
+The SQL-based approach is not viable at present. The solution involves using a hybrid approach of multiple queries and data from the Wizard that are reshaped and joined or divided post-hoc. The steps involved are:
+
+- **Load patient data**
+  - Metavision data. This step depends on the approach to isolating data from Metavision initially:
+    - A: assemble the fragments and create a data frame from each (they can be assembled later in various ways)
+    - B: read the entirety of the data in and prepare filters that can 'punch out' bits you are interested in. These data frames can be reassembled as per point A above.
+  - ABG data:
+    - This data can come from Metavision (higher likelihood of inaccuracy, especially regarding time the sample is taken) or from the Biochem department (more accurate, but slower to obtain, and reliant on the nurse running the sample through the analyser to have entered patient ID details with complete accuracy).
+    
+- **Ensure the data is anonymised**
+  - Remove all possible patient identifiers.
+  
+- **Split the data**
+  - If all the data has been loaded at once, filters must be applied to split it.
+  
+- **Apply a transformation**
+  - pivot each table to a 'wide' format to render it tidy (NB ABG data from biochem already 'tidy').
+
+- **Combine the results**
+  - assemble a new data table by adding/binding each variable table together
+  - Apply a transformation to coerce the units of each variable correctly (I think this step is only partly automatable)
+  
+- **Output**
+  - write the output to an Excel file/.csv/whatever is best, one sheet per area of interest e.g. CVS, ABGs, ventilator settings... n
+
+
+## Solution details
+### Scripts needed
+1. **Read data in**
+  - needs destination folder
+  - reads files in destination folder
+  - 1 frame per file
+  - isolate only anonymous data
+  
+2. **Transform the data**
+  - straightforward command to pivot wider
+  
+3. **Combine the results into new data frames**
+  - assemble a new data table by adding/binding each variable table together
+  - Apply a transformation to coerce the units of each variable correctly.
+
+4. **Output** 
+  - create an Excel file for each patient
+  
+5. **Final custom touches**
+  - add an info sheet at the start of the file
+  - add rows to indicate proning vs. unproning
+
