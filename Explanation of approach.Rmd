@@ -163,7 +163,7 @@ large_tibble <- bind_rows(large_tibble, periprone)
 
 ```
 
-First we remove the cardiac rhythm values as we must treat these separately before joining them back in. Then pivot what is left of the larger data.
+First we remove the cardiac rhythm values as we must treat these separately before joining them back in to the pivoted main tibble.
 
 
 ```{r}
@@ -173,9 +173,17 @@ cardiac_rhythm <- filter(large_tibble, large_tibble$`Parameter Name` == 'Cardiac
 
 large_tibble <- filter(large_tibble, large_tibble$`Parameter Name` != 'Cardiac Rhythm')
 
-### PIVOT THEN LARGE TIBBLE
+# Now manipulate the cardiac data independently. The initial pivot gives list_cols that are then turned to characters before the original column is removed.
+cardiac_rhythm <- pivot_wider(cardiac_rhythm, names_from = `Parameter Name`, values_from = Value)
 
+cardiac_rhythm$Cardiac_rhythm <- sapply(cardiac_rhythm$`Cardiac Rhythm`, toString)
+cardiac_rhythm <- select(cardiac_rhythm, Time, Cardiac_rhythm)
+
+### PIVOT THE LARGE TIBBLE
 large_tibble <- pivot_wider(large_tibble, id_cols = Time, names_from = `Parameter Name`, values_from = Value) %>% arrange(Time)
+
+# Rejoin the cardiac data
+large_tibble <- left_join(large_tibble, cardiac_rhythm, by = 'Time')
 
 ```
 
