@@ -3,12 +3,12 @@ title: "UHG data wrangling"
 author: "David M Hannon"
 date: "08/11/2021"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     toc: yes
     toc_float: yes
     number_sections: no
+  pdf_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -112,15 +112,17 @@ large_tibble <-  large_tibble %>%
                  select(Time, `Parameter Name`, Value)
 
 large_tibble$`Parameter Name` <- as.factor(large_tibble$`Parameter Name`)
+large_tibble$Value <- as.character(large_tibble$Value)
 
 head(large_tibble)
 
 ```
-Next, we pivot wider, and ensure we have sorted by Time.
+Next, we pivot wider, and ensure we have sorted by Time. We also must isolate the portion relating to 
 
 ```{r}
 
-large_tibble <- pivot_wider(large_tibble, names_from = `Parameter Name`, values_from = Value) %>% arrange(Time)
+all_variables <- unique(large_tibble$`Parameter Name`)   # isolates list of variables
+head(all_variables)
 
 ```
 
@@ -141,27 +143,39 @@ This gives the files that we must cycle through and add to a new data frame.
 
 
 periprone <- read_xlsx(periprone_files[1], guess_max = 1000000)
+
+for (i in 2:length(periprone_files)) {
+  new_periprone <- read_xlsx(periprone_files[i], guess_max = 1000000) 
+  periprone <- bind_rows(periprone, new_periprone)
+}
+
 periprone <- select(periprone, Time, `Parameter Name`, Value)
 periprone$`Parameter Name` <- as.factor(periprone$`Parameter Name`)
 periprone$Value <- as.character(periprone$Value)
 
-for (i in 2:length(periprone_files)) {
-  new_periprone <- read_xlsx(periprone_files[i], guess_max = 1000000) 
-  new_periprone <- select(new_periprone, Time, `Parameter Name`, Value)
-  new_periprone$`Parameter Name` <- as.factor(new_periprone$`Parameter Name`)
-  new_periprone$Value <- as.character(new_periprone$Value)
-  
-  periprone <- bind_rows(periprone, new_periprone)
-}
-
-
 ```
 
-Only after this frame is totally assembled does it make sense to pivot.
+Only after this frame is totally assembled does it make sense to pivot. If we are pursuing these fragments around proning then the next step it to assemble the complete data frame.
 
 ```{r}
 
-periprone <- pivot_wider(periprone, names_from = `Parameter Name`, values_from = Value)
+large_tibble <- bind_rows(large_tibble, periprone)
+
+```
+
+First we remove the cardiac rhythm values as we must treat these separately before joining them back in. Then pivot what is left of the larger data.
+
+
+```{r}
+
+# Isolate the cardiac rhythm values and remove them from the larger data frame.
+cardiac_rhythm <- filter(large_tibble, large_tibble$`Parameter Name` == 'Cardiac Rhythm')
+
+large_tibble <- filter(large_tibble, large_tibble$`Parameter Name` != 'Cardiac Rhythm')
+
+### PIVOT THEN LARGE TIBBLE
+
+large_tibble <- pivot_wider(large_tibble, id_cols = Time, names_from = `Parameter Name`, values_from = Value) %>% arrange(Time)
 
 ```
 
