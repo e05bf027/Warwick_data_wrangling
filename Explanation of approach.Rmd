@@ -3,12 +3,12 @@ title: "UHG data wrangling"
 author: "David M Hannon"
 date: "08/11/2021"
 output:
+  pdf_document:
+    toc: yes
   html_document:
     toc: yes
     toc_float: yes
     number_sections: no
-  pdf_document:
-    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -93,7 +93,7 @@ library(readxl)
 
 ```
 
-Step 1 is to create a character vector containing the destination for the large overall data file, and then we will create the large dataframe to be trimmed.
+Step 2 is to create a character vector containing the destination for the large overall data file, and then we will create the large dataframe to be trimmed.
 
 ```{r }
 
@@ -185,5 +185,35 @@ large_tibble <- pivot_wider(large_tibble, id_cols = Time, names_from = `Paramete
 # Rejoin the cardiac data
 large_tibble <- left_join(large_tibble, cardiac_rhythm, by = 'Time')
 
+```
+
+## Generating the 'cookie cutter' filters
+
+We must now create several filters that we use to punch out and isolate the data we want. Let;'s get a complete list of columns.
+
+```{r}
+
+colnames(large_tibble)
+
+```
+
+### Cardiovascular filter
+
+```{r}
+Cardio_basic <- select(large_tibble,
+                       Time,
+                       "Patient Positioning",
+                       "Heart Rate",
+                       "Cardiac_rhythm",
+                       "Arterial Pressure Systolic",
+                       "Arterial Pressure Diastolic",
+                       "Arterial Pressure Mean",
+                       "Non Invasive Arterial Pressure Systolic",
+                       "Non Invasive Arterial Pressure Diastolic",
+                       "Non Invasive Arterial Pressure Mean"
+                       ) %>% arrange(Time)
+
+
+Arrange(Cardio_basic, Time)
 ```
 
