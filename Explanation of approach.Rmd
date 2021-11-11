@@ -200,7 +200,7 @@ colnames(large_tibble)
 ### Cardiovascular filter
 
 ```{r}
-Cardio_basic <- select(large_tibble,
+cardio_basic <- select(large_tibble,
                        Time,
                        "Patient Positioning",
                        "Heart Rate",
@@ -208,12 +208,28 @@ Cardio_basic <- select(large_tibble,
                        "Arterial Pressure Systolic",
                        "Arterial Pressure Diastolic",
                        "Arterial Pressure Mean",
+                       "Central Venous Pressure",
                        "Non Invasive Arterial Pressure Systolic",
                        "Non Invasive Arterial Pressure Diastolic",
                        "Non Invasive Arterial Pressure Mean"
                        ) %>% arrange(Time)
 
-
-Arrange(Cardio_basic, Time)
 ```
+
+```{r}
+
+cardio_output <- select(large_tibble,
+                        Time,
+                        "Patient Positioning",
+                        "Cardiac output (Vigileo)",
+                        "Stroke Volume(Vigileo)",
+                        "Stroke Volume Index(Vigileo)",
+                        "Stroke Volume Variation (Vigileo)",
+                        "Systemic Vascular Resistance(Vigileo)",
+                        "Systemic Vascular Resistance Index(Vigileo)",
+                        "DO2(Vigileo)"
+                        ) %>% arrange(Time)
+                        
+```
+
 
