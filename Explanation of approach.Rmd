@@ -232,4 +232,37 @@ cardio_output <- select(large_tibble,
                         
 ```
 
+### Ventilator filter
+
+```{r}
+
+ventilator <- select(large_tibble,
+                     Time,
+                     "Patient Positioning",
+                     "Set Fraction Inspired Oxygen (PB)",
+                     "PB Mode of ventilation",
+                     "PB Ventilation Mode",
+                     "PB Mandatory Mode Type",
+                     "PB Spontaneous Type",
+                     "PB Vent Type",
+                     "Set PEEP (PB)",
+                     "Total Respiratory Rate (PB)",
+                     "Set Respiratory Rate (PB)",
+                     "Set TV (PB)",
+                     "Expiratory Tidal Volume (PB)",
+                     "Minute Volume (PB)",
+                     "Peak Inspiratory Pressure measured (PB)",
+                     "Plateau Airway Pressure (PB)",
+                     "Mean Airway Pressure (PB)",
+                     "Peak Flow (Vmax) PB",
+                     "Set I:E Ratio PB",
+                     "Set Eof I:E Ratio",
+                     "Set I of I:E Ratio",
+                     "Set Pressure Control (PB)",
+                     "Set Pressure Support (PB)",
+                     "Inspiratory Time (PB)",
+                     "Trigger Type Setting"
+                     ) %>% arrange(Time)
+
+```
 
