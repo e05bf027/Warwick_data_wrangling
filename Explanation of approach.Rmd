@@ -3,12 +3,12 @@ title: "UHG data wrangling"
 author: "David M Hannon"
 date: "08/11/2021"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     toc: yes
     toc_float: yes
     number_sections: no
+  pdf_document:
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -235,7 +235,7 @@ cardio_output <- select(large_tibble,
                         
 ```
 
-### Ventilation
+### Invasive Ventilation
 
 ```{r}
 
@@ -259,6 +259,7 @@ ventilator <- select(large_tibble,
                      "Plateau Airway Pressure (PB)",
                      "Mean Airway Pressure (PB)",
                      "Peak Flow (Vmax) PB",
+                     "Dynamic Characteristics (PB)",
                      "Set I:E Ratio PB",
                      "Set Eof I:E Ratio",
                      "Set I of I:E Ratio",
@@ -269,6 +270,50 @@ ventilator <- select(large_tibble,
                      ) %>% arrange(Time)
 
 ```
+
+### Non invasive ventilation
+
+```{r}
+# NIV
+NIV_resp <- select(large_tibble,
+                   Time,
+                   "Set EPAP",
+                   "Set IPAP Respironics",
+                   "Set IPAP Rise Time Respironics",
+                   "Respironics Mode",
+                   "Measured CPAP Respironics",
+                   "Total RR Respironics",
+                   "FiO2 Non-Invasive Ventilation",
+                   "Peak Inspiratory Pressure",
+                   "IPAP",
+                   "EPAP",
+                   "Set Breath Rate Respironics",
+                   "Set O2 % Respironics",
+                   "BiPAP - Vt",
+                   "Non-Invasive Ventilation Mode",
+                   "AVAP IPAP High",
+                   "AVAP IPAP Low",
+                   "Set TV AVAP",
+                   "PEEP NIV",
+                   "Set TV Triology",
+                   "TV exp - Trilogy",
+                   "TV ins - Trilogy",
+                   "Leak.",
+                   "Minute Volume (exp)",
+                   "Inspiratory Time",
+                   "Expiratory Time",
+                   "Positive Inspiratory Pressure",
+                   "Mean Airway Pressure",
+                   "Set maxPressure",
+                   "Set Pressure Support Max",
+                   "Set Pressure Support Min",
+                   "Set EPAP Min",
+                   "Set EPAP Max"
+                   ) %>% arrange(Time)
+
+```
+
+
 
 ### ABG filter
 
@@ -304,6 +349,7 @@ ABG_meta<- select(large_tibble,
 ABG_biochem <- read_xlsx('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/01_AO/ABG_biochem/ABG_biochem_AO.xlsx')
 
 ABG_biochem <-  select(ABG_biochem, -'Hospital Number', - 'Receive Date')
+
 
 ```
 
