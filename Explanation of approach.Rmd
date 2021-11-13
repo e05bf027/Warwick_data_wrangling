@@ -200,8 +200,6 @@ colnames(large_tibble)
 ### Cardiovascular filter
 
 ```{r}
-
-# Basic CV filter
 cardio_basic <- select(large_tibble,
                        Time,
                        "Patient Positioning",
@@ -220,7 +218,6 @@ cardio_basic <- select(large_tibble,
 
 ```{r}
 
-# Cardiac output (Vigileo)
 cardio_output <- select(large_tibble,
                         Time,
                         "Patient Positioning",
@@ -235,11 +232,10 @@ cardio_output <- select(large_tibble,
                         
 ```
 
-### Ventilation
+### Ventilator filter
 
 ```{r}
 
-# Ventilator (PB) filter
 ventilator <- select(large_tibble,
                      Time,
                      "Patient Positioning",
@@ -267,35 +263,6 @@ ventilator <- select(large_tibble,
                      "Inspiratory Time (PB)",
                      "Trigger Type Setting"
                      ) %>% arrange(Time)
-
-```
-
-### ABG filter
-
-```{r}
-
-# ABG (Metavision)
-ABG_meta<- select(large_tibble,
-                  Time,
-                  "Patient Positioning",   # These two should be identical
-                  "Patient Positioning ABG",
-                  "Blood Gas Source",
-                  "PH (ABG)",
-                  "PaO2",
-                  "PaCO2",
-                  "Bicarbonate (ABG) s",   # Figure which of these is usually there
-                  "Bicarbonate (ABG) a",
-                  "Base excess (vt)",
-                  "Base Excess (vv)",
-                  "Lactate ABG",
-                  "Total Haemoglobin",
-                  "Sodium ABG",
-                  "Chloride ABG",
-                  "Potassium ABG",
-                  "Ionised Calcium ABG",
-                  "ABG Glucose Level",
-                  ) %>% arrange(Time)
-                  
 
 ```
 
