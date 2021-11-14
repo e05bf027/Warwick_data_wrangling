@@ -90,7 +90,7 @@ Step 1 is to load relevant packages:
 library(tidyverse)   # Loads packages needed
 library(lubridate)
 library(readxl)
-library(openxlsx)
+library(writexl)
 
 ```
 
@@ -99,7 +99,7 @@ Step 2 is to create a character vector containing the destination for the large 
 ```{r }
 
 # Begin by entering the pathway of the large data frame you will subdivide.
-file_location <- as.character('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/01_AO/Verified/01_AO_verified.xlsx')
+file_location <- as.character('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/02_PG/Verified/02_PG_v2.xlsx')
 
 large_tibble <- read_xlsx(file_location, guess_max = 1000000)
 
@@ -131,7 +131,7 @@ The next step is optional and depends on whether we want to include the 30 minut
 
 ```{r}
 
-periprone_location <- as.character('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/01_AO/Unverified')
+periprone_location <- as.character('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/02_PG/Unverified')
 
 periprone_files <- list.files(periprone_location, full.names = TRUE)
 periprone_files
@@ -359,31 +359,17 @@ The final step involves writing the tidy output.
 
 ```{r}
 
-# Make a list of tables to include in the workbook
+# Make a list of data frames to include in the Excel output
 data_sheets <- c(cardio_basic,
                  cardio_output,
                  ventilator_PB,
                  NIV_resp,
                  ABG_meta,
                  ABG_biochem)
+
 data_sheets
  
- 
-## Create a blank workbook
-proning_output <- createWorkbook()
- 
-## Loop through the list of split tables as well as their names
-##   and add each one as a sheet to the workbook
-Map(function(data, name){
- 
-    addWorksheet(proning_output, name)
-    writeData(data_sheets, name, data)
- 
-}, data_sheets, names(data_sheets))
- 
- 
-## Save workbook to working directory
-saveWorkbook(wb, file = "Patient_010.xlsx", overwrite = TRUE)
+# 
 
 ```
 
