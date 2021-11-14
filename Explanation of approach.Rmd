@@ -90,6 +90,7 @@ Step 1 is to load relevant packages:
 library(tidyverse)   # Loads packages needed
 library(lubridate)
 library(readxl)
+library(openxlsx)
 
 ```
 
@@ -240,7 +241,7 @@ cardio_output <- select(large_tibble,
 ```{r}
 
 # Ventilator (PB) filter
-ventilator <- select(large_tibble,
+ventilator_PB <- select(large_tibble,
                      Time,
                      "Patient Positioning",
                      "Set Fraction Inspired Oxygen (PB)",
@@ -314,7 +315,6 @@ NIV_resp <- select(large_tibble,
 ```
 
 
-
 ### ABG filter
 
 ```{r}
@@ -350,6 +350,40 @@ ABG_biochem <- read_xlsx('/Users/davidhannon/Documents/02. Medicine/Med_Programm
 
 ABG_biochem <-  select(ABG_biochem, -'Hospital Number', - 'Receive Date')
 
+
+```
+
+## Creating excel output
+
+The final step involves writing the tidy output.
+
+```{r}
+
+# Make a list of tables to include in the workbook
+data_sheets <- c(cardio_basic,
+                 cardio_output,
+                 ventilator_PB,
+                 NIV_resp,
+                 ABG_meta,
+                 ABG_biochem)
+data_sheets
+ 
+ 
+## Create a blank workbook
+proning_output <- createWorkbook()
+ 
+## Loop through the list of split tables as well as their names
+##   and add each one as a sheet to the workbook
+Map(function(data, name){
+ 
+    addWorksheet(proning_output, name)
+    writeData(data_sheets, name, data)
+ 
+}, data_sheets, names(data_sheets))
+ 
+ 
+## Save workbook to working directory
+saveWorkbook(wb, file = "Patient_010.xlsx", overwrite = TRUE)
 
 ```
 
