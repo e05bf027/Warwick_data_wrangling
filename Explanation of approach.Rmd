@@ -98,6 +98,9 @@ Step 2 is to create a character vector containing the destination for the large 
 
 ```{r }
 
+# Remove pre-existing files from previous runs
+rm(list = ls())
+
 # Begin by entering the pathway of the large data frame you will subdivide.
 file_location <- as.character('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/02_PG/Verified/02_PG_v2.xlsx')
 
@@ -248,7 +251,7 @@ ventilator_PB <- select(large_tibble,
                      "PB Mode of ventilation",
                      "PB Ventilation Mode",
                      "PB Mandatory Mode Type",
-                     "PB Spontaneous Type",
+                     #"PB Spontaneous Type",
                      "PB Vent Type",
                      "Set PEEP (PB)",
                      "Total Respiratory Rate (PB)",
@@ -324,21 +327,21 @@ ABG_meta<- select(large_tibble,
                   Time,
                   "Patient Positioning",   # These two should be identical
                   "Patient Positioning ABG",
-                  "Blood Gas Source",
+                  #"Blood Gas Source",
                   "PH (ABG)",
                   "PaO2",
                   "PaCO2",
-                  "Bicarbonate (ABG) s",   # Figure which of these is usually there
+                  #"Bicarbonate (ABG) s",   # Figure which of these is usually there
                   "Bicarbonate (ABG) a",
                   "Base excess (vt)",
-                  "Base Excess (vv)",
+                  #"Base Excess (vv)",
                   "Lactate ABG",
                   "Total Haemoglobin",
                   "Sodium ABG",
-                  "Chloride ABG",
+                  #"Chloride ABG",
                   "Potassium ABG",
                   "Ionised Calcium ABG",
-                  "ABG Glucose Level",
+                  #"ABG Glucose Level",
                   ) %>% arrange(Time)
 
 ```
@@ -346,7 +349,7 @@ ABG_meta<- select(large_tibble,
 ```{r}
 
 # ABG (from biochem)
-ABG_biochem <- read_xlsx('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/01_AO/ABG_biochem/ABG_biochem_AO.xlsx')
+ABG_biochem <- read_xlsx('/Users/davidhannon/Documents/02. Medicine/Med_Programming/MD_Metavision_wrangle/raw_data/02_PG/ABG_biochem/ABG_biochem_PG.xlsx')
 
 ABG_biochem <-  select(ABG_biochem, -'Hospital Number', - 'Receive Date')
 
@@ -360,16 +363,17 @@ The final step involves writing the tidy output.
 ```{r}
 
 # Make a list of data frames to include in the Excel output
-data_sheets <- c(cardio_basic,
+data_sheets <- list(cardio_basic,
                  cardio_output,
                  ventilator_PB,
-                 NIV_resp,
+                 #'NIV_resp',
                  ABG_meta,
                  ABG_biochem)
 
 data_sheets
  
-# 
+# write file 
+write_xlsx(data_sheets, "Patient_00X.xlsx")
 
 ```
 
